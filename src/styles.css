@@ -1,1 +1,25 @@
-/* You can add global styles to this file, and also import other style files */
+.screen>header {
+    flex: 0 0 1rem;
+}
+
+.screen header {
+    height: 1rem;
+}
+
+.screen header .header-nav {
+    height: 1rem;
+}
+
+.screen header .branding {
+    height: 1rem;
+    min-width: 6rem;
+    padding: 0 1rem;
+}
+
+.screen header .branding .title {
+    line-height: 1rem;
+}
+
+.screen .header-actions {
+    padding: 0 1rem;
+}
