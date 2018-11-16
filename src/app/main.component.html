@@ -1,25 +1,24 @@
 <div class="main-container screen">
-    <header class="header-2">
-      <div class="branding">
-          <span class="title">HealthBot</span>
-      </div>
-      <div class="header-nav">
-        {{currentTime}}
-      </div>
-      <div class="header-actions">
-        {{status}}
-      </div>
-    </header>
-    <div class="content-container">
-      <div class="content-area">
-        <div class="card">
-          <div class="card-block">
-            <div class="card-text">
-              <app-view-display [currentView]="currentView"></app-view-display>
-            </div>
+  <header class="header-2" [class.disconnected]="!info.connected">
+    <div class="branding">
+      <span class="title">HealthBot</span>
+    </div>
+    <div class="header-nav">
+      {{currentTime}}
+    </div>
+    <div class="header-actions">
+      {{info.status}}
+    </div>
+  </header>
+  <div class="content-container">
+    <div class="content-area">
+      <div class="card">
+        <div class="card-block">
+          <div class="card-text">
+            <app-view-display [currentView]="currentView" [websocket]="websocket"></app-view-display>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+</div>

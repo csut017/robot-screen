@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { interval } from 'rxjs';
 import * as moment from 'moment';
 import { ActivatedRoute } from '@angular/router';
+import { WebsocketService, WebsocketStatus } from './websocket.service';
 
 @Component({
   selector: 'app-main',
@@ -10,16 +11,24 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MainComponent implements OnInit {
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+    public websocket: WebsocketService) { }
 
+  info: WebsocketStatus = new WebsocketStatus('Initialising...');
   currentTime: string = 'Initialising';
-  status: string = 'Initialising';
   currentView: string = 'face';
 
-  ngOnInit(){
+  ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
     const id = this.route.snapshot.paramMap.get('id');
-    this.currentView = id || 'face';
+    let firstTime = true;
+    this.websocket.initialise()
+      .subscribe(info => {
+        this.info = info;
+        if (firstTime && info.connected) {
+          this.currentView = id || 'face';
+          firstTime = false;
+        };
+      });
   }
-
 }
