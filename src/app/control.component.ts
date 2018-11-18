@@ -16,6 +16,7 @@ export class ControlComponent implements OnInit {
   currentTime: string = 'Initialising';
   currentView: string = '<none>';
   newScreen: string;
+  textInput: string;
 
   ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
@@ -30,6 +31,15 @@ export class ControlComponent implements OnInit {
 
   changeScreen(): void {
     this.websocket.changeView(this.newScreen)
+      .subscribe(result => {
+        console.groupCollapsed('Handle result');
+        console.log(result);
+        console.groupEnd();
+      });
+  }
+
+  sendInput(): void {
+    this.websocket.sendInput(this.textInput)
       .subscribe(result => {
         console.groupCollapsed('Handle result');
         console.log(result);

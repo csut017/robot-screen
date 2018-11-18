@@ -40,15 +40,26 @@
                 <div class="clr-row">
                   <div class="clr-col-9">
                     <clr-input-container>
-                      <label>Change Screen to</label>
-                      <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
+                      <label>Send Input</label>
+                      <input clrInput type="text" [(ngModel)]="textInput" name="textInput" placeholder="Input to Send" />
                     </clr-input-container>
                   </div>
                   <div class="clr-col-3">
-                    <button class="btn btn-block" (click)="changeScreen()">Change</button>
+                    <button class="btn btn-block push-down" (click)="sendInput()">Send</button>
                   </div>
                 </div>
-              </form>
+                <div class="clr-row">
+                    <div class="clr-col-9">
+                      <clr-input-container>
+                        <label>Change Screen</label>
+                        <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
+                      </clr-input-container>
+                    </div>
+                    <div class="clr-col-3">
+                      <button class="btn btn-block push-down" (click)="changeScreen()">Change</button>
+                    </div>
+                  </div>
+                </form>
             </div>
           </div>
         </div>

@@ -52,3 +52,7 @@ view-display-content .btn-lg {
 .clr-input {
   width: 100%;
 }
+
+.card-block .push-down {
+    margin-top: 1.1rem;
+}

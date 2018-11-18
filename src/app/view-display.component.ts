@@ -123,7 +123,7 @@ export class ViewDisplayComponent implements OnInit, OnChanges {
 
       publish(text: string): void {
         console.log(`[View] Sending ${text} to robot`);
-        this.websocket.sendText(text)
+        this.websocket.sendInput(text)
           .subscribe(info => {
             if (info.status != 'OK') {
               alert('Send failed');

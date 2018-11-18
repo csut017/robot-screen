@@ -110,7 +110,7 @@ export class WebsocketService {
       );
   }
 
-  sendText(text: string): Observable<CommandStatus> {
+  sendInput(text: string): Observable<CommandStatus> {
     console.log(`[WebSocket] Sending input to server: ${text}`);
     return this.sendToServer('input', {
       text: text
