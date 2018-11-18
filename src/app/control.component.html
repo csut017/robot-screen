@@ -1,0 +1,57 @@
+<div class="main-container screen">
+  <header class="header-2" [class.disconnected]="!info.connected">
+    <div class="branding">
+      <span class="title">HealthBot: Control</span>
+    </div>
+    <div class="header-nav">
+      {{currentTime}}
+    </div>
+    <div class="header-actions">
+      {{info.status}}
+    </div>
+  </header>
+  <div class="content-container">
+    <div class="content-area">
+      <div class="clr-row">
+        <div class="clr-col">
+          <div class="card">
+            <div class="card-header">
+              Information
+            </div>
+            <div class="card-block">
+              <table class="table table-vertical">
+                <tbody>
+                  <tr>
+                    <th style="width:33%;">Current View</th>
+                    <td>{{currentView}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="clr-col">
+          <div class="card">
+            <div class="card-header">
+              Commands
+            </div>
+            <div class="card-block">
+              <form clrForm>
+                <div class="clr-row">
+                  <div class="clr-col-9">
+                    <clr-input-container>
+                      <label>Change Screen to</label>
+                      <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
+                    </clr-input-container>
+                  </div>
+                  <div class="clr-col-3">
+                    <button class="btn btn-block" (click)="changeScreen()">Change</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

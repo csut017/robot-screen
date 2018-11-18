@@ -27,8 +27,17 @@ export class MainComponent implements OnInit {
         this.info = info;
         if (firstTime && info.connected) {
           this.currentView = id || 'face';
+          if (!id) {
+            this.websocket.fetchCurrentView()
+              .subscribe(view => this.currentView = view || 'face');
+          }
           firstTime = false;
         };
       });
+    this.websocket.viewChanged.subscribe(screen => {
+      screen = screen || 'face';
+      console.log(`[Main] Changing screen to ${screen}`);
+      this.currentView = screen
+    });
   }
 }

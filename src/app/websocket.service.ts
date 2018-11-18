@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,6 +14,8 @@ export class WebsocketStatus {
 })
 export class WebsocketService {
 
+  @Output() viewChanged: EventEmitter<string> = new EventEmitter<string>();
+
   private socket: any;
   private lastId: number = 0;
   private responseHandlers: { [index: number]: any } = {};
@@ -25,8 +27,20 @@ export class WebsocketService {
   initialise(): Observable<WebsocketStatus> {
     const obs = Observable.create(emitter => {
       emitter.next(new WebsocketStatus('Connecting...'));
-      console.log('[WebSocket] Opening websocket');
-      this.socket = new WebSocket(environment.wsURL);
+      console.groupCollapsed('[WebSocket] Opening websocket');
+      try {
+        var socketURL = environment.wsURL;
+        if (!socketURL.startsWith('ws://') && !socketURL.startsWith('wss://')) {
+          socketURL = (location.protocol == 'https:' ? 'wss://' : 'ws://') +
+            location.hostname + (location.port ? ':' + location.port : '') +
+            (environment.wsURL.startsWith('/') ? '' : '/') +
+            environment.wsURL;
+        }
+        console.log(`[WebSocket] Connecting to ${socketURL}`);
+        this.socket = new WebSocket(socketURL);
+      } finally {
+        console.groupEnd();
+      }
 
       let me = this;
       this.socket.onopen = function () {
@@ -53,6 +67,12 @@ export class WebsocketService {
             delete me.responseHandlers[msgId];
           } else {
             console.log('[WebSocket] Message has already been handled');
+          }
+        } else {
+          switch (msg.type) {
+            case 'changeScreen':
+              me.viewChanged.emit(msg.data.screen);
+              break;
           }
         }
       };
@@ -82,10 +102,25 @@ export class WebsocketService {
       );
   }
 
+  fetchCurrentView(): Observable<string> {
+    console.log('[WebSocket] Fetching current view');
+    return this.sendToServer('getScreen', {})
+      .pipe(
+        map<any, string>(msg => msg.data.screen)
+      );
+  }
+
   sendText(text: string): Observable<CommandStatus> {
-    console.log(`[WebSocket] Sending text to server: ${text}`);
+    console.log(`[WebSocket] Sending input to server: ${text}`);
     return this.sendToServer('input', {
       text: text
+    });
+  }
+
+  changeView(screen: string): Observable<CommandStatus> {
+    console.log(`[WebSocket] Sending changeScreen to server: ${screen}`);
+    return this.sendToServer('changeScreen', {
+      screen: screen || null
     });
   }
 
