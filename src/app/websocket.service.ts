@@ -110,10 +110,31 @@ export class WebsocketService {
       );
   }
 
+  fetchScheduledEvents(): Observable<ScheduledEvent[]> {
+    console.log('[WebSocket] Fetching scheduled events');
+    return this.sendToServer('getEvents', {})
+      .pipe(
+        map<any, ScheduledEvent[]>(msg => msg.data ? msg.data.events : null)
+      );
+  }
+
   sendInput(text: string): Observable<CommandStatus> {
     console.log(`[WebSocket] Sending input to server: ${text}`);
     return this.sendToServer('input', {
       text: text
+    });
+  }
+
+  startScript(eventId: number): Observable<CommandStatus> {
+    console.log(`[WebSocket] Triggering script with ID=${eventId}`);
+    return this.sendToServer('startEvent', {
+      eventId: eventId
+    });
+  }
+
+  downloadFromServer(): Observable<CommandStatus> {
+    console.log(`[WebSocket] Sending download trigger to server`);
+    return this.sendToServer('download', {
     });
   }
 
@@ -149,4 +170,9 @@ export type ViewData = { [index: string]: any };
 
 export interface CommandStatus {
   status: string;
+}
+
+export interface ScheduledEvent {
+  event_id: number;
+  script: string;
 }

@@ -36,6 +36,16 @@
               Commands
             </div>
             <div class="card-block">
+              <div class="clr-row">
+                <div class="clr-col-3">
+                  <button class="btn btn-block btn-success-outline" (click)="refreshEvents()">Refresh</button>
+                </div>
+                <div class="clr-col-3">
+                  <button class="btn btn-block btn-success-outline" (click)="triggerDownload()">Download</button>
+                </div>
+              </div>
+            </div>
+            <div class="card-block">
               <form clrForm>
                 <div class="clr-row">
                   <div class="clr-col-9">
@@ -49,17 +59,30 @@
                   </div>
                 </div>
                 <div class="clr-row">
-                    <div class="clr-col-9">
-                      <clr-input-container>
-                        <label>Change Screen</label>
-                        <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
-                      </clr-input-container>
-                    </div>
-                    <div class="clr-col-3">
-                      <button class="btn btn-block push-down" (click)="changeScreen()">Change</button>
-                    </div>
+                  <div class="clr-col-9">
+                    <clr-input-container>
+                      <label>Change Screen</label>
+                      <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
+                    </clr-input-container>
                   </div>
-                </form>
+                  <div class="clr-col-3">
+                    <button class="btn btn-block push-down" (click)="changeScreen()">Change</button>
+                  </div>
+                </div>
+                <div class="clr-row">
+                  <div class="clr-col-9">
+                    <clr-select-container>
+                      <label>Start Script</label>
+                      <select clrSelect name="selectedEvent" [(ngModel)]="selectedEvent">
+                        <option value="{{evt.event_id}}" *ngFor="let evt of scheduledEvents">{{evt.script}}</option>
+                      </select>
+                    </clr-select-container>
+                  </div>
+                  <div class="clr-col-3">
+                    <button class="btn btn-block push-down" (click)="startScript()" [disabled]="!selectedEvent">Start</button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>

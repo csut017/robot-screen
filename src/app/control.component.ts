@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WebsocketService, WebsocketStatus } from './websocket.service';
+import { WebsocketService, WebsocketStatus, ScheduledEvent } from './websocket.service';
 import * as moment from 'moment';
 import { interval } from 'rxjs';
 
@@ -17,6 +17,8 @@ export class ControlComponent implements OnInit {
   currentView: string = '<none>';
   newScreen: string;
   textInput: string;
+  selectedEvent: ScheduledEvent;
+  scheduledEvents: ScheduledEvent[] = [];
 
   ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
@@ -40,6 +42,32 @@ export class ControlComponent implements OnInit {
 
   sendInput(): void {
     this.websocket.sendInput(this.textInput)
+      .subscribe(result => {
+        console.groupCollapsed('Handle result');
+        console.log(result);
+        console.groupEnd();
+      });
+  }
+
+  refreshEvents(): void {
+    this.websocket.fetchScheduledEvents()
+      .subscribe(result => {
+        this.selectedEvent = null;
+        this.scheduledEvents = result || [];
+      });
+  }
+
+  triggerDownload(): void {
+    this.websocket.downloadFromServer()
+      .subscribe(result => {
+        console.groupCollapsed('Handle result');
+        console.log(result);
+        console.groupEnd();
+      });
+  }
+
+  startScript(): void {
+    this.websocket.startScript(this.selectedEvent.event_id)
       .subscribe(result => {
         console.groupCollapsed('Handle result');
         console.log(result);
