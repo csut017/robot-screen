@@ -56,3 +56,11 @@ view-display-content .btn-lg {
 .card-block .push-down {
     margin-top: 1.1rem;
 }
+
+.clr-select-wrapper {
+  width: 100%;
+}
+
+.clr-select-wrapper > select {
+  width: 100%;
+}

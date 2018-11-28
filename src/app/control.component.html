@@ -53,29 +53,29 @@
             <div class="card-block">
               <form clrForm>
                 <div class="clr-row">
-                  <div class="clr-col-9">
+                  <div class="clr-col-8">
                     <clr-input-container>
                       <label>Send Input</label>
                       <input clrInput type="text" [(ngModel)]="textInput" name="textInput" placeholder="Input to Send" />
                     </clr-input-container>
                   </div>
-                  <div class="clr-col-3">
+                  <div class="clr-col-4">
                     <button class="btn btn-block push-down" (click)="sendInput()" [disabled]="!info.connected">Send</button>
                   </div>
                 </div>
                 <div class="clr-row">
-                  <div class="clr-col-9">
+                  <div class="clr-col-8">
                     <clr-input-container>
                       <label>Change Screen</label>
                       <input clrInput type="text" [(ngModel)]="newScreen" name="newScreen" placeholder="New screen name" />
                     </clr-input-container>
                   </div>
-                  <div class="clr-col-3">
+                  <div class="clr-col-4">
                     <button class="btn btn-block push-down" (click)="changeScreen()" [disabled]="!info.connected">Change</button>
                   </div>
                 </div>
                 <div class="clr-row">
-                  <div class="clr-col-9">
+                  <div class="clr-col-8">
                     <clr-select-container>
                       <label>Start Script</label>
                       <select clrSelect name="selectedEvent" [(ngModel)]="selectedEvent">
@@ -83,7 +83,7 @@
                       </select>
                     </clr-select-container>
                   </div>
-                  <div class="clr-col-3">
+                  <div class="clr-col-4">
                     <button class="btn btn-block push-down" (click)="startScript()" [disabled]="!info.connected || !selectedEvent">Start</button>
                   </div>
                 </div>
