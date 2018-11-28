@@ -17,7 +17,7 @@ export class ControlComponent implements OnInit {
   currentView: string = '<none>';
   newScreen: string;
   textInput: string;
-  selectedEvent: ScheduledEvent;
+  selectedEvent: string;
   scheduledEvents: ScheduledEvent[] = [];
 
   ngOnInit() {
@@ -27,6 +27,7 @@ export class ControlComponent implements OnInit {
         this.info = info;
         this.websocket.fetchCurrentView()
           .subscribe(view => this.currentView = view || '<none>');
+          this.refreshEvents();
       });
     this.websocket.viewChanged.subscribe(screen => this.currentView = screen || '<none>');
   }
@@ -52,8 +53,9 @@ export class ControlComponent implements OnInit {
   refreshEvents(): void {
     this.websocket.fetchScheduledEvents()
       .subscribe(result => {
-        this.selectedEvent = null;
         this.scheduledEvents = result || [];
+        this.selectedEvent = null;
+        if (this.scheduledEvents.length) this.selectedEvent = this.scheduledEvents[0].event_id.toString();
       });
   }
 
@@ -67,7 +69,7 @@ export class ControlComponent implements OnInit {
   }
 
   startScript(): void {
-    this.websocket.startScript(this.selectedEvent.event_id)
+    this.websocket.startScript(parseInt(this.selectedEvent))
       .subscribe(result => {
         console.groupCollapsed('Handle result');
         console.log(result);
