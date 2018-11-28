@@ -24,6 +24,10 @@ export class WebsocketService {
 
   constructor() { }
 
+  isConnected(): boolean {
+    return this.isOpen;
+  }
+
   initialise(): Observable<WebsocketStatus> {
     const obs = Observable.create(emitter => {
       emitter.next(new WebsocketStatus('Connecting...'));
@@ -78,6 +82,7 @@ export class WebsocketService {
       };
       this.socket.onclose = function () {
         console.log('[WebSocket] Websocket closed');
+        me.isOpen = false;
         this.socket = undefined;
         emitter.next(new WebsocketStatus('Disconnected'));
       };

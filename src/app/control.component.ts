@@ -22,13 +22,17 @@ export class ControlComponent implements OnInit {
 
   ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
+    this.websocket.viewChanged.subscribe(screen => this.currentView = screen || '<none>');
+    this.connectToServer();
+  }
+
+  connectToServer(): void {
     this.websocket.initialise()
       .subscribe(info => {
         this.info = info;
         this.websocket.fetchCurrentView()
           .subscribe(view => this.currentView = view || '<none>');
       });
-    this.websocket.viewChanged.subscribe(screen => this.currentView = screen || '<none>');
   }
 
   changeScreen(): void {

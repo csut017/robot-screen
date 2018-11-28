@@ -36,12 +36,17 @@
               Commands
             </div>
             <div class="card-block">
-              <div class="clr-row">
-                <div class="clr-col-3">
+              <div class="clr-row" *ngIf="info.connected">
+                <div class="clr-col-4">
                   <button class="btn btn-block btn-success-outline" (click)="refreshEvents()">Refresh</button>
                 </div>
-                <div class="clr-col-3">
+                <div class="clr-col-4">
                   <button class="btn btn-block btn-success-outline" (click)="triggerDownload()">Download</button>
+                </div>
+              </div>
+              <div class="clr-row" *ngIf="!info.connected">
+                <div class="clr-col-4">
+                  <button class="btn btn-block btn-warning-outline" (click)="connectToServer()">Connect</button>
                 </div>
               </div>
             </div>
@@ -55,7 +60,7 @@
                     </clr-input-container>
                   </div>
                   <div class="clr-col-3">
-                    <button class="btn btn-block push-down" (click)="sendInput()">Send</button>
+                    <button class="btn btn-block push-down" (click)="sendInput()" [disabled]="!info.connected">Send</button>
                   </div>
                 </div>
                 <div class="clr-row">
@@ -66,7 +71,7 @@
                     </clr-input-container>
                   </div>
                   <div class="clr-col-3">
-                    <button class="btn btn-block push-down" (click)="changeScreen()">Change</button>
+                    <button class="btn btn-block push-down" (click)="changeScreen()" [disabled]="!info.connected">Change</button>
                   </div>
                 </div>
                 <div class="clr-row">
@@ -79,7 +84,7 @@
                     </clr-select-container>
                   </div>
                   <div class="clr-col-3">
-                    <button class="btn btn-block push-down" (click)="startScript()" [disabled]="!selectedEvent">Start</button>
+                    <button class="btn btn-block push-down" (click)="startScript()" [disabled]="!info.connected || !selectedEvent">Start</button>
                   </div>
                 </div>
               </form>
