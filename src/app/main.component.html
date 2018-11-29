@@ -14,6 +14,30 @@
     <div class="content-area">
       <div class="card">
         <div class="card-block">
+          <div class="alert alert-app-level alert-danger failure-information" role="alert" *ngIf="!connecting && !info.connected">
+            <div class="alert-items">
+              <div class="alert-item static">
+                <div class="alert-icon-wrapper">
+                  <clr-icon class="alert-icon" shape="exclamation-circle" style="width: 2rem; height: 2rem;"></clr-icon>
+                </div>
+                <div class="alert-text">
+                  Connection to robot lost.
+                </div>
+              </div>
+              <div class="alert-item static">
+                <div class="alert-text">
+                  Attempting to reconnect {{timeToConnectDisplay}}...
+                </div>
+              </div>
+              <div class="alert-item static">
+                <div class="alert-actions">
+                  <button class="btn alert-action" (click)="connectToServer()">Connect</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-block" *ngIf="info.connected || connecting">
           <div class="card-text">
             <app-view-display [currentView]="currentView" [websocket]="websocket"></app-view-display>
           </div>
