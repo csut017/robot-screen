@@ -15,18 +15,35 @@
       <div class="clr-row">
         <div class="clr-col">
           <div class="card">
-            <div class="card-header">
-              Information
-            </div>
             <div class="card-block">
-              <table class="table table-vertical">
-                <tbody>
-                  <tr>
-                    <th style="width:33%;">Current View</th>
-                    <td>{{currentView}}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <clr-tabs>
+                <clr-tab>
+                  <button clrTabLink>Information</button>
+                  <clr-tab-content *clrIfActive>
+                    <table class="table table-vertical">
+                      <tbody>
+                        <tr>
+                          <th style="width:33%;">Current View</th>
+                          <td>{{currentView}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </clr-tab-content>
+                </clr-tab>
+                <clr-tab>
+                  <button clrTabLink>View Data</button>
+                  <clr-tab-content *clrIfActive>
+                    <table class="table table-vertical">
+                      <tbody>
+                        <tr *ngFor="let item of viewData">
+                          <th style="width:50%;">{{item.name}}</th>
+                          <td>{{item.value}}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </clr-tab-content>
+                </clr-tab>
+              </clr-tabs>
             </div>
           </div>
         </div>

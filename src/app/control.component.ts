@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { WebsocketService, WebsocketStatus, ScheduledEvent } from './websocket.service';
+import { WebsocketService, WebsocketStatus, ScheduledEvent, ViewData } from './websocket.service';
 import * as moment from 'moment';
 import { interval } from 'rxjs';
+
+class ViewDataItem {
+  constructor(public name: string,
+    public value: string) {}
+}
 
 @Component({
   selector: 'app-control',
@@ -19,10 +24,15 @@ export class ControlComponent implements OnInit {
   textInput: string;
   selectedEvent: string;
   scheduledEvents: ScheduledEvent[] = [];
+  viewData: ViewDataItem[] = [];
 
   ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
-    this.websocket.viewChanged.subscribe(screen => this.currentView = screen || '<none>');
+    this.websocket.viewChanged.subscribe(screen => {
+      this.currentView = screen || '<none>';
+      this.websocket.fetchViewData()
+        .subscribe(data => this.loadViewData(data));
+    });
     this.connectToServer();
   }
 
@@ -32,8 +42,20 @@ export class ControlComponent implements OnInit {
         this.info = info;
         this.websocket.fetchCurrentView()
           .subscribe(view => this.currentView = view || '<none>');
-          this.refreshEvents();
+        this.websocket.fetchViewData()
+          .subscribe(data => this.loadViewData(data));
+        this.refreshEvents();
       });
+  }
+
+  private loadViewData(data: ViewData): void {
+    console.log('Loading view data');
+    this.viewData = [];
+    for (var key in data) {
+      const value = data[key];
+      this.viewData.push(new ViewDataItem(key, value));
+    }
+    this.viewData.sort((a, b) => a.name == b.name ? 0 : a.name > b.name ? 1 : -1);
   }
 
   changeScreen(): void {
