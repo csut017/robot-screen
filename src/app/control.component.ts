@@ -46,8 +46,8 @@ export class ControlComponent implements OnInit {
   }
 
   private addDebug(msg: DebugMessage): void {
-    let name = 'unknown',
-      value = '';
+    let name = 'error-standard',
+      value = msg.type;
     switch (msg.type) {
       case 'FUN_CALL':
         name = 'chat-bubble';
@@ -59,6 +59,11 @@ export class ControlComponent implements OnInit {
           args.push(`${key}='${argVal}'`);
         }
         value += '(' + args.join(',') + ')';
+        break;
+
+      case 'RES_LOOKUP':
+        name = 'bundle';
+        value = msg.details.resource + '.' + msg.details.type;
         break;
     }
 
