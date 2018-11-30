@@ -46,14 +46,10 @@
                 <clr-tab>
                   <button clrTabLink>Debug Log</button>
                   <clr-tab-content *clrIfActive>
-                    <table class="table table-vertical">
-                      <tbody>
-                        <tr *ngFor="let item of logData">
-                          <th style="width:50%;">{{item.name}}</th>
-                          <td>{{item.value}}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <div *ngFor="let item of logData">
+                      <clr-icon [attr.shape]="item.lineType"></clr-icon>
+                      {{item.value}}
+                    </div>
                   </clr-tab-content>
                 </clr-tab>
               </clr-tabs>
