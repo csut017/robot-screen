@@ -36,7 +36,7 @@ export class ControlComponent implements OnInit {
       this.websocket.fetchViewData()
         .subscribe(data => this.loadViewData(data));
     });
-    this.websocket.debugChanged.subscribe(msg => this.addDebug);
+    this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
     this.connectToServer();
   }
 
