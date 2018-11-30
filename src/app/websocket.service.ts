@@ -9,11 +9,17 @@ export class WebsocketStatus {
     public connected?: boolean) { }
 }
 
+export interface DebugMessage {
+  type: string;
+  details: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
-
+  
+  @Output() debugChanged: EventEmitter<DebugMessage> = new EventEmitter<DebugMessage>();
   @Output() viewChanged: EventEmitter<string> = new EventEmitter<string>();
 
   private socket: any;
@@ -76,6 +82,10 @@ export class WebsocketService {
           switch (msg.type) {
             case 'changeScreen':
               me.viewChanged.emit(msg.data.screen);
+              break;
+
+            case 'debug':
+              me.debugChanged.emit(msg.data);
               break;
           }
         }

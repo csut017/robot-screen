@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { WebsocketService, WebsocketStatus, ScheduledEvent, ViewData } from './websocket.service';
+import { WebsocketService, WebsocketStatus, ScheduledEvent, ViewData, DebugMessage } from './websocket.service';
 import * as moment from 'moment';
 import { interval } from 'rxjs';
 
 class ViewDataItem {
   constructor(public name: string,
-    public value: string) {}
+    public value: string) { }
+
+  details: any;
 }
 
 @Component({
@@ -25,6 +27,7 @@ export class ControlComponent implements OnInit {
   selectedEvent: string;
   scheduledEvents: ScheduledEvent[] = [];
   viewData: ViewDataItem[] = [];
+  logData: ViewDataItem[] = [];
 
   ngOnInit() {
     interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
@@ -33,7 +36,23 @@ export class ControlComponent implements OnInit {
       this.websocket.fetchViewData()
         .subscribe(data => this.loadViewData(data));
     });
+    this.websocket.debugChanged.subscribe(msg => this.addDebug);
     this.connectToServer();
+  }
+
+  private addDebug(msg: DebugMessage): void {
+    let name = '<unknown>: ' + msg.type,
+      value = '';
+    switch (msg.type) {
+      case 'FUN_CALL':
+        name = 'Function';
+        value = msg.details['function'];
+        break;
+    }
+
+    let item = new ViewDataItem(name, value);
+    item.details = msg.details;
+    this.logData.splice(0, 0, item);
   }
 
   connectToServer(): void {
