@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  baseURL: '/views/',
+  baseURL: '/',
   wsURL: '/socket'
 };
