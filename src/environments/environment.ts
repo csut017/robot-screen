@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseURL: 'http://localhost:8088/views/',
+  baseURL: 'http://localhost:8088/',
   wsURL: 'ws://localhost:8088/socket'
 };
 

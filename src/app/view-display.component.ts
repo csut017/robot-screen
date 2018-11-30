@@ -40,7 +40,7 @@ export class ViewDisplayComponent implements OnInit, OnChanges {
     console.log(`[View] Retrieving view ${this.currentView}`);
     this.isLoading = true;
     const safeView = encodeURI(this.currentView);
-    const url = `${environment.baseURL}${safeView}`;
+    const url = `${environment.baseURL}views/${safeView}`;
     this.error = undefined;
     this.websocket.fetchViewData()
       .subscribe(data => {
@@ -116,12 +116,12 @@ export class ViewDisplayComponent implements OnInit, OnChanges {
         if (resolved) return resolved;
 
         console.log(`[View] Resolving resource ${resource}`);
-        resolved = `/static/media/${resource}`;
+        resolved = `${environment.baseURL}static/media/${resource}`;
         this.resources[resource] = resolved;
         return resolved;
       }
 
-      publish(text: string): void {
+      sendInput(text: string): void {
         console.log(`[View] Sending ${text} to robot`);
         this.websocket.sendInput(text)
           .subscribe(info => {
