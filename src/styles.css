@@ -79,3 +79,8 @@ view-display-content .btn-lg {
   height: 3rem !important;
   padding: 0.75rem;
 }
+
+.debug-line {
+  overflow-x: hidden;
+  white-space: nowrap;
+}
