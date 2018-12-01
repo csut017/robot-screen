@@ -13,6 +13,7 @@ import { ControlComponent } from './control.component';
 import { FormsModule } from '@angular/forms';
 import { DebuggerComponent } from './debugger.component';
 import { HeaderComponent } from './header.component';
+import { CodeViewerComponent } from './code-viewer.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { HeaderComponent } from './header.component';
     MainComponent,
     ControlComponent,
     DebuggerComponent,
-    HeaderComponent
+    HeaderComponent,
+    CodeViewerComponent
   ],
   imports: [
     HttpClientModule,
