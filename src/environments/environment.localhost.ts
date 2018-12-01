@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  baseURL: 'http://192.168.56.101:8088/',
-  wsURL: 'ws://192.168.56.101:8088/socket'
+  baseURL: 'http://localhost:8088/',
+  wsURL: 'ws://localhost:8088/socket'
 };
 
 /*
