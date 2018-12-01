@@ -1,19 +1,22 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { WebsocketService } from './websocket.service';
 import { AbstractSyntaxTree, ASTNode } from './abstract-syntax-tree';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 class CodeLine {
-  constructor(public node: ASTNode, indent: number) {
-    this.pretty = this.formatNode(node, '&nbsp;'.repeat(indent));
+  constructor(sanitizer: DomSanitizer,
+    public node: ASTNode,
+    indent: number) {
+    this.pretty = sanitizer.bypassSecurityTrustHtml(this.formatNode(node, '&nbsp;'.repeat(indent)));
   }
 
-  pretty: string;
+  pretty: SafeHtml;
 
   private formatNode(node: ASTNode, indent: string): string {
     let out = indent;
     switch (node.type) {
       case 'function': {
-        out += this.func(node.token.value) +
+        out += this.func(node.token.value, node.id) +
           this.syntax('(');
         let args = (node.args || []).map(arg => this.formatNode(arg, ''));
         out += args.join(this.syntax(', '));
@@ -51,7 +54,7 @@ class CodeLine {
         break;
 
       case 'reference':
-        out += this.reference("@" + node.token.value);
+        out += this.reference("@" + node.token.value, node.id);
         break;
 
       default:
@@ -63,8 +66,8 @@ class CodeLine {
     return out;
   }
 
-  private func(text: string): string {
-    return this.format(text, 'code-function');
+  private func(text: string, id: string): string {
+    return this.format(text, 'code-function', id);
   }
 
   private syntax(text: string): string {
@@ -83,12 +86,12 @@ class CodeLine {
     return this.format(text, 'code-number');
   }
 
-  private reference(text: string): string {
-    return this.format(text, 'code-reference');
+  private reference(text: string, id: string): string {
+    return this.format(text, 'code-reference', id);
   }
 
-  private format(text: string, className: string): string {
-    return '<span class="' + className + '">' + text + '</span>';
+  private format(text: string, className: string, id?: string): string {
+    return '<span class="' + className + (id ? '" data-id="' + id : '') + '">' + text + '</span>';
   }
 }
 
@@ -98,7 +101,8 @@ class CodeLine {
   styleUrls: ['./code-viewer.component.css']
 })
 export class CodeViewerComponent implements OnInit, OnChanges {
-  constructor(private websocket: WebsocketService) { }
+  constructor(private websocket: WebsocketService,
+    private sanitizer: DomSanitizer) { }
 
   lines: CodeLine[];
   @Input() ast: AbstractSyntaxTree;
@@ -112,7 +116,7 @@ export class CodeViewerComponent implements OnInit, OnChanges {
   }
 
   private loadNode(node: ASTNode, level: number): void {
-    this.lines.push(new CodeLine(node, level * 4));
+    this.lines.push(new CodeLine(this.sanitizer, node, level * 4));
     level++;
     (node.children || []).forEach(n => this.loadNode(n, level));
   }
