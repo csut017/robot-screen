@@ -9,10 +9,11 @@
               Debug Log
             </div>
             <div class="card-block">
-              <div *ngFor="let item of logData" class="debug-line" (click)="item.isOpen = !item.isOpen" [class.expandable]="item.details.result">
+              <div *ngFor="let item of logData" class="debug-line" (click)="processItem(item)" [class.expandable]="!!item.details.result || !!item.details.ast">
                 <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
                 {{item.value}}
                 <clr-icon shape="flag" class="is-solid" *ngIf="item.details.result"></clr-icon>
+                <clr-icon shape="pop-out" class="is-success" *ngIf="item.details.ast"></clr-icon>
                 <div class="card" *ngIf="item.isOpen && item.details.result">
                   <div class="card-block">
                     {{item.details.result}}
@@ -23,7 +24,14 @@
           </div>
         </div>
         <div class="clr-col">
-          <app-code-viewer></app-code-viewer>
+          <div class="card" *ngIf="!!ast">
+            <div class="card-header">
+              {{ast.name}}
+            </div>
+            <div class="card-block">
+              <app-code-viewer [ast]="ast"></app-code-viewer>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WebsocketStatus, WebsocketService, DebugMessage } from './websocket.service';
 import { DebugLine } from './debug-line';
+import { AbstractSyntaxTree } from './abstract-syntax-tree';
 
 @Component({
   selector: 'app-debugger',
@@ -13,6 +14,7 @@ export class DebuggerComponent implements OnInit {
 
   info: WebsocketStatus = new WebsocketStatus('Initialising...');
   logData: DebugLine[] = [];
+  ast: AbstractSyntaxTree;
 
   ngOnInit() {
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
@@ -27,6 +29,17 @@ export class DebuggerComponent implements OnInit {
           this.refreshDebugLog();
         }
       });
+  }
+
+  processItem(item: DebugLine): void {
+    item.isOpen = !item.isOpen;
+    if (item.details.ast) {
+      console.groupCollapsed('[Debugger] Opening script');
+      const ast = new AbstractSyntaxTree(item.details.name, item.details.ast);
+      console.log(ast);
+      this.ast = ast;
+      console.groupEnd();
+    }
   }
 
   refreshDebugLog(): void {

@@ -79,3 +79,23 @@ view-display-content .btn-lg {
   height: 3rem !important;
   padding: 0.75rem;
 }
+
+.code-function {
+  color: rgb(26, 26, 166);
+}
+
+.code-argument {
+  color: rgb(148, 18, 128);
+}
+
+.code-syntax {
+  color: rgb(0, 0, 0);
+}
+
+.code-reference {
+  color: rgb(35, 110, 36);
+}
+
+.code-string, .code-number {
+  color: rgb(192, 0, 0);
+}
