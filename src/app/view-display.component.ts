@@ -39,6 +39,7 @@ export class ViewDisplayComponent implements OnInit, OnChanges {
 
     console.log(`[View] Retrieving view ${this.currentView}`);
     this.isLoading = true;
+    this.container.clear();
     const safeView = encodeURI(this.currentView);
     const url = `${environment.baseURL}views/${safeView}`;
     this.error = undefined;
@@ -70,12 +71,14 @@ export class ViewDisplayComponent implements OnInit, OnChanges {
     this.http.get(url, { responseType: 'text' as 'text' })
       .pipe(
         tap(data => {
+          this.error = undefined;
           console.groupCollapsed(`[View] View ${this.currentView} retrieved`);
           console.log(data);
           console.groupEnd();
         }),
         catchError(err => {
           this.error = `${err.message}`;
+          this.container.clear();
           console.groupCollapsed(`[View] Unable to retrieve ${this.currentView}`);
           console.log(err);
           console.groupEnd();

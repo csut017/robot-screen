@@ -1,6 +1,6 @@
 <div class="main-container screen">
-    <app-header [info]="info" [title]="'HealthBot: Control'"></app-header>
-    <div class="content-container">
+  <app-header [info]="info" [title]="'HealthBot: Control'"></app-header>
+  <div class="content-container">
     <div class="content-area">
       <div class="clr-row">
         <div class="clr-col">
@@ -8,16 +8,21 @@
             <div class="card-block">
               <clr-tabs>
                 <clr-tab>
-                  <button clrTabLink>Information</button>
+                  <button clrTabLink>Current Screen</button>
                   <clr-tab-content *clrIfActive>
                     <table class="table table-vertical">
                       <tbody>
                         <tr>
-                          <th style="width:33%;">Current View</th>
-                          <td>{{currentView}}</td>
+                          <th style="width:33%;">Screen Name</th>
+                          <td>{{currentViewName()}}</td>
                         </tr>
                       </tbody>
                     </table>
+                    <div class="card" *ngIf="currentView">
+                      <div class="card-block">
+                        <app-view-display [currentView]="currentView" [websocket]="websocket"></app-view-display>
+                      </div>
+                    </div>
                   </clr-tab-content>
                 </clr-tab>
                 <clr-tab>

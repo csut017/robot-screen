@@ -17,7 +17,7 @@ export class ControlComponent implements OnInit {
   constructor(public websocket: WebsocketService) { }
 
   info: WebsocketStatus = new WebsocketStatus('Initialising...');
-  currentView: string = '<none>';
+  currentView: string;
   newScreen: string;
   textInput: string;
   selectedEvent: string;
@@ -27,7 +27,7 @@ export class ControlComponent implements OnInit {
 
   ngOnInit() {
     this.websocket.viewChanged.subscribe(screen => {
-      this.currentView = screen || '<none>';
+      this.currentView = screen;
       this.websocket.fetchViewData()
         .subscribe(data => this.loadViewData(data));
     });
@@ -41,13 +41,17 @@ export class ControlComponent implements OnInit {
         this.info = info;
         if (info.connected) {
           this.websocket.fetchCurrentView()
-            .subscribe(view => this.currentView = view || '<none>');
+            .subscribe(view => this.currentView = view);
           this.websocket.fetchViewData()
             .subscribe(data => this.loadViewData(data));
           this.refreshEvents();
           this.refreshDebugLog();
         }
       });
+  }
+
+  currentViewName(): string {
+    return this.currentView || '<none>';
   }
 
   private loadViewData(data: ViewData): void {
