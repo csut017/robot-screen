@@ -9,16 +9,39 @@
               Debug Log
             </div>
             <div class="card-block">
-              <div *ngFor="let item of logData" class="debug-line" (click)="processItem(item)" [class.expandable]="!!item.details.result || !!item.details.ast">
+              <div *ngFor="let item of logData" class="debug-line" (click)="processItem(item)" [class.expandable]="!!item.details.result || !!item.details.ast || !!item.details.condition">
                 <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
                 {{item.value}}
-                <clr-icon shape="flag" class="is-solid" *ngIf="item.details.result"></clr-icon>
-                <clr-icon shape="pop-out" class="is-success" *ngIf="item.details.ast"></clr-icon>
-                <div class="card" *ngIf="item.isOpen && item.details.result">
-                  <div class="card-block">
-                    {{item.details.result}}
-                  </div>
-                </div>
+                <clr-icon shape="info-circle" class="is-highlight" *ngIf="item.details.result || item.details.condition"></clr-icon>
+                <clr-icon shape="pop-out" class="is-highlight" *ngIf="item.details.ast"></clr-icon>
+                <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.result">
+                  <tbody>
+                    <tr>
+                      <th>Resource</th>
+                      <td>{{item.details.resource}}</td>
+                    </tr>
+                    <tr>
+                      <th>Result</th>
+                      <td>{{item.details.result}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.condition">
+                  <tbody>
+                    <tr>
+                      <th>Condition</th>
+                      <td>{{item.details.condition}}</td>
+                    </tr>
+                    <tr>
+                      <th>Value</th>
+                      <td>{{item.details.value}}</td>
+                    </tr>
+                    <tr>
+                      <th>Outcome</th>
+                      <td>{{item.details.hit ? 'Matched' : 'Skip'}}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
@@ -29,7 +52,7 @@
               {{ast.name}}
             </div>
             <div class="card-block">
-              <app-code-viewer [ast]="ast"></app-code-viewer>
+              <app-code-viewer [ast]="ast" [callTable]="callTable"></app-code-viewer>
             </div>
           </div>
         </div>

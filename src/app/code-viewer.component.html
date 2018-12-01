@@ -1,2 +1,5 @@
-<div *ngFor="let line of lines" [innerHTML]="line.pretty">
+<div *ngFor="let line of lines">
+  <span class="badge" [class.badge-light-blue]="line.callCount > 0">{{line.callCountDisplay}}</span>
+  <span [innerHTML]="line.pretty">
+  </span>
 </div>

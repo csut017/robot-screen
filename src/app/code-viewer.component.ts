@@ -1,22 +1,29 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { WebsocketService } from './websocket.service';
 import { AbstractSyntaxTree, ASTNode } from './abstract-syntax-tree';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { CallTable } from './call-table';
 
 class CodeLine {
-  constructor(sanitizer: DomSanitizer,
-    public node: ASTNode,
-    indent: number) {
-    this.pretty = sanitizer.bypassSecurityTrustHtml(this.formatNode(node, '&nbsp;'.repeat(indent)));
+  constructor(public node: ASTNode,
+    indent: number,
+    private table: CallTable) {
+    this.pretty = this.formatNode(node, '&nbsp;'.repeat(indent));
+    this.updateCallCount();
   }
 
-  pretty: SafeHtml;
+  pretty: string;
+  callCount: number = 0;
+  callCountDisplay: string;
+
+  updateCallCount(): void {
+    this.callCount = this.table.get(this.node.id);
+    this.callCountDisplay = this.callCount > 9 ? '*' : this.callCount.toString();
+  }
 
   private formatNode(node: ASTNode, indent: string): string {
     let out = indent;
     switch (node.type) {
       case 'function': {
-        out += this.func(node.token.value, node.id) +
+        out += this.func(node.token.value) +
           this.syntax('(');
         let args = (node.args || []).map(arg => this.formatNode(arg, ''));
         out += args.join(this.syntax(', '));
@@ -43,18 +50,23 @@ class CodeLine {
             break;
 
           case 'number':
+          case 'boolean':
             out += this.num(node.token.value);
             break;
 
           default:
-            console.log(`[CodeViewer] Unknown token type: ${node.type}`);
+            console.log(`[CodeViewer] Unknown token type: ${node.token.value}`);
             out += this.syntax(node.token.value);
             break;
         }
         break;
 
+      case 'duration':
+        out += this.num(node.token.value + 's');
+        break;
+
       case 'reference':
-        out += this.reference("@" + node.token.value, node.id);
+        out += this.reference("@" + node.token.value);
         break;
 
       default:
@@ -66,8 +78,8 @@ class CodeLine {
     return out;
   }
 
-  private func(text: string, id: string): string {
-    return this.format(text, 'code-function', id);
+  private func(text: string): string {
+    return this.format(text, 'code-function');
   }
 
   private syntax(text: string): string {
@@ -86,12 +98,12 @@ class CodeLine {
     return this.format(text, 'code-number');
   }
 
-  private reference(text: string, id: string): string {
-    return this.format(text, 'code-reference', id);
+  private reference(text: string): string {
+    return this.format(text, 'code-reference');
   }
 
-  private format(text: string, className: string, id?: string): string {
-    return '<span class="' + className + (id ? '" data-id="' + id : '') + '">' + text + '</span>';
+  private format(text: string, className: string): string {
+    return '<span class="' + className + '">' + text + '</span>';
   }
 }
 
@@ -101,11 +113,11 @@ class CodeLine {
   styleUrls: ['./code-viewer.component.css']
 })
 export class CodeViewerComponent implements OnInit, OnChanges {
-  constructor(private websocket: WebsocketService,
-    private sanitizer: DomSanitizer) { }
+  constructor() { }
 
   lines: CodeLine[];
   @Input() ast: AbstractSyntaxTree;
+  @Input() callTable: CallTable;
 
   ngOnInit() {
   }
@@ -116,7 +128,7 @@ export class CodeViewerComponent implements OnInit, OnChanges {
   }
 
   private loadNode(node: ASTNode, level: number): void {
-    this.lines.push(new CodeLine(this.sanitizer, node, level * 4));
+    this.lines.push(new CodeLine(node, level * 4, this.callTable));
     level++;
     (node.children || []).forEach(n => this.loadNode(n, level));
   }

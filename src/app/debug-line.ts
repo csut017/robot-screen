@@ -24,13 +24,31 @@ export class DebugLine {
                 break;
 
             case 'RES_LOOKUP':
-                name = 'search';
+                name = 'deploy';
                 value = `RESOURCE[${msg.details.type}]: ${msg.details.resource}`;
                 break;
 
             case 'SCRIPT_START':
                 name = 'play';
                 value = `SCRIPT: ${msg.details.name}`;
+                break;
+
+            case 'BRANCH_EVAL':
+                if (msg.details.hit) {
+                    name = 'success-standard';
+                } else {
+                    name = 'times-circle';
+                }
+
+                let outValues = [];
+                for (var key in msg.details.branch_value) {
+                    const val = msg.details.branch_value[key];
+                    outValues.push(`${key}=${val}`);
+                }
+                let out = outValues.join(', ');
+                msg.details.condition = out;
+
+                value = `EVAL: ${out}`;
                 break;
         }
 

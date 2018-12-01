@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { WebsocketStatus, WebsocketService, DebugMessage } from './websocket.service';
 import { DebugLine } from './debug-line';
 import { AbstractSyntaxTree } from './abstract-syntax-tree';
+import { CallTable } from './call-table';
 
 @Component({
   selector: 'app-debugger',
@@ -15,6 +16,7 @@ export class DebuggerComponent implements OnInit {
   info: WebsocketStatus = new WebsocketStatus('Initialising...');
   logData: DebugLine[] = [];
   ast: AbstractSyntaxTree;
+  callTable: CallTable = new CallTable();
 
   ngOnInit() {
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
@@ -51,6 +53,7 @@ export class DebuggerComponent implements OnInit {
   }
 
   private addDebug(msg: DebugMessage): void {
+    this.callTable.increment(msg.details.node_id);
     this.logData.splice(0, 0, DebugLine.FromMessage(msg));
   }
 }
