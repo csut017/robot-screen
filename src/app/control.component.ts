@@ -1,18 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { WebsocketService, WebsocketStatus, ScheduledEvent, ViewData, DebugMessage } from './websocket.service';
-import * as moment from 'moment';
-import { interval } from 'rxjs';
+import { DebugLine } from './debug-line';
 
 class ViewDataItem {
   constructor(public name: string,
     public value: string) { }
-}
-
-class DebugLine {
-  constructor(public lineType: string,
-    public value: string) { }
-
-  details: any;
 }
 
 @Component({
@@ -25,7 +17,6 @@ export class ControlComponent implements OnInit {
   constructor(public websocket: WebsocketService) { }
 
   info: WebsocketStatus = new WebsocketStatus('Initialising...');
-  currentTime: string = 'Initialising';
   currentView: string = '<none>';
   newScreen: string;
   textInput: string;
@@ -35,7 +26,6 @@ export class ControlComponent implements OnInit {
   logData: DebugLine[] = [];
 
   ngOnInit() {
-    interval(1000).subscribe(_ => this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a"));
     this.websocket.viewChanged.subscribe(screen => {
       this.currentView = screen || '<none>';
       this.websocket.fetchViewData()
@@ -43,38 +33,6 @@ export class ControlComponent implements OnInit {
     });
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
     this.connectToServer();
-  }
-
-  private addDebug(msg: DebugMessage): void {
-    let name = 'error-standard',
-      value = msg.type;
-    switch (msg.type) {
-      case 'FUN_CALL':
-        name = 'redo';
-        value = msg.details['function'];
-        let args = [],
-          argList = msg.details['arguments'];
-        for (let key in argList) {
-          let argVal = argList[key];
-          args.push(`${key}='${argVal}'`);
-        }
-        value += '(' + args.join(', ') + ')';
-        break;
-
-      case 'RES_LOOKUP':
-        name = 'search';
-        value = `RESOURCE[${msg.details.type}]: ${msg.details.resource}`;
-        break;
-
-        case 'SCRIPT_START':
-        name = 'play';
-        value = `SCRIPT: ${msg.details.name}`;
-        break;
-      }
-
-    let item = new DebugLine(name, value);
-    item.details = msg.details;
-    this.logData.splice(0, 0, item);
   }
 
   connectToServer(): void {
@@ -162,5 +120,37 @@ export class ControlComponent implements OnInit {
         console.log(result);
         console.groupEnd();
       });
+  }
+
+  private addDebug(msg: DebugMessage): void {
+    let name = 'error-standard',
+      value = msg.type;
+    switch (msg.type) {
+      case 'FUN_CALL':
+        name = 'redo';
+        value = msg.details['function'];
+        let args = [],
+          argList = msg.details['arguments'];
+        for (let key in argList) {
+          let argVal = argList[key];
+          args.push(`${key}='${argVal}'`);
+        }
+        value += '(' + args.join(', ') + ')';
+        break;
+
+      case 'RES_LOOKUP':
+        name = 'search';
+        value = `RESOURCE[${msg.details.type}]: ${msg.details.resource}`;
+        break;
+
+        case 'SCRIPT_START':
+        name = 'play';
+        value = `SCRIPT: ${msg.details.name}`;
+        break;
+      }
+
+    let item = new DebugLine(name, value);
+    item.details = msg.details;
+    this.logData.splice(0, 0, item);
   }
 }

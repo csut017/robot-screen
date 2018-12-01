@@ -14,9 +14,8 @@ export class MainComponent implements OnInit {
   constructor(private route: ActivatedRoute,
     public websocket: WebsocketService) { }
 
-  info: WebsocketStatus = new WebsocketStatus('Initialising...');
   connecting: boolean;
-  currentTime: string = 'Initialising';
+  info: WebsocketStatus = new WebsocketStatus('Initialising...');
   currentView: string = 'face';
   firstTime: boolean = true;
   timeToConnect: moment.Moment;
@@ -25,7 +24,6 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     interval(500).subscribe(_ => {
-      this.currentTime = moment().format("dddd, Do MMMM YYYY, h:mm a");
       this.checkToConnect();
     });
     const id = this.route.snapshot.paramMap.get('id');

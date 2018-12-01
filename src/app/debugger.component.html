@@ -1,0 +1,22 @@
+<div class="main-container screen">
+  <app-header [info]="info" [title]="'HealthBot: Debugger'"></app-header>
+  <div class="content-container">
+    <div class="content-area">
+      <div class="clr-row">
+        <div class="clr-col">
+          <div class="card">
+            <div class="card-header">
+              Debug Log
+            </div>
+            <div class="card-block">
+              <div *ngFor="let item of logData" class="debug-line">
+                <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
+                {{item.value}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

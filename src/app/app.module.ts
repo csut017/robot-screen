@@ -11,13 +11,17 @@ import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main.component';
 import { ControlComponent } from './control.component';
 import { FormsModule } from '@angular/forms';
+import { DebuggerComponent } from './debugger.component';
+import { HeaderComponent } from './header.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ViewDisplayComponent,
     MainComponent,
-    ControlComponent
+    ControlComponent,
+    DebuggerComponent,
+    HeaderComponent
   ],
   imports: [
     HttpClientModule,
