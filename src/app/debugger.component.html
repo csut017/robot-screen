@@ -9,12 +9,20 @@
               Debug Log
             </div>
             <div class="card-block">
-              <div *ngFor="let item of logData" class="debug-line">
+              <div *ngFor="let item of logData" class="debug-line" (click)="item.isOpen = !item.isOpen" [class.expandable]="item.details.result">
                 <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
                 {{item.value}}
+                <clr-icon shape="flag" class="is-solid" *ngIf="item.details.result"></clr-icon>
+                <div class="card" *ngIf="item.isOpen && item.details.result">
+                  <div class="card-block">
+                    {{item.details.result}}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+        <div class="clr-col">
         </div>
       </div>
     </div>

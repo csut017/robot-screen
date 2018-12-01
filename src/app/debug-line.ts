@@ -5,6 +5,7 @@ export class DebugLine {
         public value: string) { }
 
     details: any;
+    isOpen: boolean;
 
     static FromMessage(msg: DebugMessage): DebugLine {
         let name = 'error-standard',
