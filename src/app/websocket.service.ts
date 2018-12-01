@@ -18,7 +18,7 @@ export interface DebugMessage {
   providedIn: 'root'
 })
 export class WebsocketService {
-  
+
   @Output() debugChanged: EventEmitter<DebugMessage> = new EventEmitter<DebugMessage>();
   @Output() viewChanged: EventEmitter<string> = new EventEmitter<string>();
 
@@ -133,6 +133,14 @@ export class WebsocketService {
       );
   }
 
+  fetchDebugLog(): Observable<DebugMessage[]> {
+    console.log('[WebSocket] Fetching debug log');
+    return this.sendToServer('getDebugLog', {})
+      .pipe(
+        map<any, DebugMessage[]>(msg => msg.data ? msg.data.events : null)
+      );
+  }
+
   sendInput(text: string): Observable<CommandStatus> {
     console.log(`[WebSocket] Sending input to server: ${text}`);
     return this.sendToServer('input', {
@@ -149,8 +157,12 @@ export class WebsocketService {
 
   downloadFromServer(): Observable<CommandStatus> {
     console.log(`[WebSocket] Sending download trigger to server`);
-    return this.sendToServer('download', {
-    });
+    return this.sendToServer('download', {});
+  }
+
+  resetExecution(): Observable<CommandStatus> {
+    console.log(`[WebSocket] Sending execution reset to server`);
+    return this.sendToServer('resetExecution', {});
   }
 
   changeView(screen: string): Observable<CommandStatus> {

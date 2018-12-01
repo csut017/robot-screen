@@ -46,8 +46,8 @@
                 <clr-tab>
                   <button clrTabLink>Debug Log</button>
                   <clr-tab-content *clrIfActive>
-                    <div *ngFor="let item of logData">
-                      <clr-icon [attr.shape]="item.lineType"></clr-icon>
+                    <div *ngFor="let item of logData" class="debug-line">
+                      <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
                       {{item.value}}
                     </div>
                   </clr-tab-content>
@@ -68,6 +68,9 @@
                 </div>
                 <div class="clr-col-4">
                   <button class="btn btn-block btn-success-outline" (click)="triggerDownload()">Download</button>
+                </div>
+                <div class="clr-col-4">
+                  <button class="btn btn-block btn-success-outline" (click)="resetExecution()">Reset</button>
                 </div>
               </div>
               <div class="clr-row" *ngIf="!info.connected">

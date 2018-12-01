@@ -50,7 +50,7 @@ export class ControlComponent implements OnInit {
       value = msg.type;
     switch (msg.type) {
       case 'FUN_CALL':
-        name = 'chat-bubble';
+        name = 'redo';
         value = msg.details['function'];
         let args = [],
           argList = msg.details['arguments'];
@@ -58,14 +58,19 @@ export class ControlComponent implements OnInit {
           let argVal = argList[key];
           args.push(`${key}='${argVal}'`);
         }
-        value += '(' + args.join(',') + ')';
+        value += '(' + args.join(', ') + ')';
         break;
 
       case 'RES_LOOKUP':
-        name = 'bundle';
-        value = msg.details.resource + '.' + msg.details.type;
+        name = 'search';
+        value = `RESOURCE[${msg.details.type}]: ${msg.details.resource}`;
         break;
-    }
+
+        case 'SCRIPT_START':
+        name = 'play';
+        value = `SCRIPT: ${msg.details.name}`;
+        break;
+      }
 
     let item = new DebugLine(name, value);
     item.details = msg.details;
@@ -76,11 +81,14 @@ export class ControlComponent implements OnInit {
     this.websocket.initialise()
       .subscribe(info => {
         this.info = info;
-        this.websocket.fetchCurrentView()
-          .subscribe(view => this.currentView = view || '<none>');
-        this.websocket.fetchViewData()
-          .subscribe(data => this.loadViewData(data));
-        this.refreshEvents();
+        if (info.connected) {
+          this.websocket.fetchCurrentView()
+            .subscribe(view => this.currentView = view || '<none>');
+          this.websocket.fetchViewData()
+            .subscribe(data => this.loadViewData(data));
+          this.refreshEvents();
+          this.refreshDebugLog();
+        }
       });
   }
 
@@ -121,8 +129,25 @@ export class ControlComponent implements OnInit {
       });
   }
 
+  refreshDebugLog(): void {
+    this.websocket.fetchDebugLog()
+      .subscribe(result => {
+        let items = result || [];
+        items.forEach(item => this.addDebug(item));
+      });
+  }
+
   triggerDownload(): void {
     this.websocket.downloadFromServer()
+      .subscribe(result => {
+        console.groupCollapsed('Handle result');
+        console.log(result);
+        console.groupEnd();
+      });
+  }
+
+  resetExecution(): void {
+    this.websocket.resetExecution()
       .subscribe(result => {
         console.groupCollapsed('Handle result');
         console.log(result);
