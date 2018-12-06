@@ -56,11 +56,13 @@ export class DebuggerComponent implements OnInit {
         console.groupEnd();
 
         var element = document.getElementById(this.currentNodeID);
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center"
-        });
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+            inline: "center"
+          });
+        }
       }
     }
   }
