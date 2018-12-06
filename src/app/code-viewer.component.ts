@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { AbstractSyntaxTree, ASTNode } from './abstract-syntax-tree';
 import { CallTable } from './call-table';
 
@@ -8,8 +8,11 @@ class CodeLine {
     private table: CallTable) {
     this.pretty = this.formatNode(node, '&nbsp;'.repeat(indent));
     this.updateCallCount();
+    this.id = node.id;
   }
 
+  id: string;
+  isSelected: boolean = false;
   pretty: string;
   callCount: number = 0;
   callCountDisplay: string;
@@ -112,19 +115,40 @@ class CodeLine {
   templateUrl: './code-viewer.component.html',
   styleUrls: ['./code-viewer.component.css']
 })
-export class CodeViewerComponent implements OnInit, OnChanges {
+export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
   constructor() { }
 
   lines: CodeLine[];
   @Input() ast: AbstractSyntaxTree;
   @Input() callTable: CallTable;
+  @Input() currentNodeID: string;
+  @ViewChild('codeViewCanvas') canvasElementRef: ElementRef;
+  @ViewChild('codeViewLines') linesElementRef: ElementRef;
+
+  private canvasElement: HTMLCanvasElement;
+  private context: CanvasRenderingContext2D;
+  private lastAST: AbstractSyntaxTree;
 
   ngOnInit() {
   }
 
+  ngAfterViewInit() {
+    console.log('[CodeViewer] Children initialised');
+    this.canvasElement = <HTMLCanvasElement>this.canvasElementRef.nativeElement;
+    this.context = this.canvasElement.getContext('2d');
+  }
+
   ngOnChanges(_: SimpleChanges): void {
+    if (this.lastAST && (this.lastAST.name == this.ast.name)) {
+      (this.lines || []).forEach(l => l.isSelected = l.id == this.currentNodeID);
+      this.lastAST = this.ast;
+      return;
+    }
+
     this.lines = [];
     this.ast.nodes.forEach(node => this.loadNode(node, 0));
+    this.lastAST = this.ast;
+    this.lines.forEach(l => l.isSelected = l.id == this.currentNodeID);
   }
 
   private loadNode(node: ASTNode, level: number): void {

@@ -1,5 +1,12 @@
-<div *ngFor="let line of lines">
-  <span class="badge" [class.badge-light-blue]="line.callCount > 0">{{line.callCountDisplay}}</span>
-  <span [innerHTML]="line.pretty">
-  </span>
+<div class="codeViewParent">
+  <canvas class="codeViewCanvas" #codeViewCanvas>
+
+  </canvas>
+  <div class="codeViewLines" #codeViewLines>
+    <div *ngFor="let line of lines" data-id="{{line.id}}" [class.selected-line]="line.isSelected">
+      <span class="badge" [class.badge-info]="line.callCount > 0">{{line.callCountDisplay}}</span>
+      <span [innerHTML]="line.pretty">
+      </span>
+    </div>
+  </div>
 </div>

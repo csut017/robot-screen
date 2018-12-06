@@ -17,6 +17,7 @@ export class DebuggerComponent implements OnInit {
   logData: DebugLine[] = [];
   ast: AbstractSyntaxTree;
   callTable: CallTable = new CallTable();
+  currentNodeID: string;
 
   ngOnInit() {
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
@@ -35,6 +36,7 @@ export class DebuggerComponent implements OnInit {
 
   processItem(item: DebugLine): void {
     item.isOpen = !item.isOpen;
+    this.currentNodeID = item.details.node_id;
     if (item.details.ast) {
       console.groupCollapsed('[Debugger] Opening script');
       const ast = new AbstractSyntaxTree(item.details.name, item.details.ast);
