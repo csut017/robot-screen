@@ -19,7 +19,7 @@ class CodeLine {
 
   updateCallCount(): void {
     this.callCount = this.table.get(this.node.id);
-    this.callCountDisplay = this.callCount > 9 ? '*' : this.callCount.toString();
+    this.callCountDisplay = this.callCount > 9 ? '+' : this.callCount.toString();
   }
 
   private formatNode(node: ASTNode, indent: string): string {
@@ -72,6 +72,10 @@ class CodeLine {
         out += this.reference("@" + node.token.value);
         break;
 
+        case 'template':
+        out += this.template('"' + node.token.value + '"');
+        break;
+
       default:
         out += this.syntax(node.token.value);
         console.log(`[CodeViewer] Unknown node type: ${node.type}`);
@@ -87,6 +91,10 @@ class CodeLine {
 
   private syntax(text: string): string {
     return this.format(text, 'code-syntax');
+  }
+
+  private template(text: string): string {
+    return this.format(text, 'code-template');
   }
 
   private argument(text: string): string {
@@ -130,6 +138,7 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
   private linesElement: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private lastAST: AbstractSyntaxTree;
+  private isLinked: boolean;
 
   ngOnInit() {
   }
@@ -156,16 +165,22 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
     }
     this.lastAST = this.ast;
     this.displayCurrentNodeAndLink();
+
+    if (!this.isLinked) {
+      this.callTable.updated.subscribe(id => (this.lines || []).forEach(l => l.updateCallCount()));
+      this.isLinked = true;
+    }
   }
 
   private setCanvasSize() {
     const rect = this.linesElement.getBoundingClientRect();
-    this.canvasElement.width = rect.width;
-    this.canvasElement.height = rect.height;
+    if (this.canvasElement.width != rect.width) this.canvasElement.width = rect.width;
+    if (this.canvasElement.height != rect.height) this.canvasElement.height = rect.height;
   }
 
   private displayCurrentNodeAndLink(delayed?: boolean): void {
     if (this.context) {
+      if (this.linesElement) this.setCanvasSize();
       this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
     }
     (this.lines || []).forEach(l => l.isSelected = l.id == this.currentNodeID);
@@ -189,6 +204,8 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
       width = elWidth - prevWidth,
       height = elTop - prevElTop,
       offset = elRect.height / 2;
+    let xDist = elRect.height,
+      yDist = 0;
 
     // Draw the arrow line
     this.context.strokeStyle = '#003D79';
@@ -200,7 +217,7 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
       endX = startX - width,
       endY = startY - height;
     this.context.moveTo(endX, endY);
-    this.context.bezierCurveTo(endX + elRect.height, endY, startX + elRect.height, startY, startX, startY);
+    this.context.bezierCurveTo(endX + xDist, endY - yDist, startX + xDist, startY + yDist, startX, startY);
     this.context.stroke();
 
     // Draw the arrow head
@@ -210,6 +227,10 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
     this.context.lineTo(startX, startY + 5);
     this.context.lineTo(startX, startY - 5);
     this.context.fill();
+  }
+
+  selectItem(evt: any): void {
+    console.log(evt);
   }
 
   private getLineWidth(el: HTMLElement): number {
