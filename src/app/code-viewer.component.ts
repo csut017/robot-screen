@@ -122,10 +122,12 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() ast: AbstractSyntaxTree;
   @Input() callTable: CallTable;
   @Input() currentNodeID: string;
+  @Input() previousNodeID: string;
   @ViewChild('codeViewCanvas') canvasElementRef: ElementRef;
   @ViewChild('codeViewLines') linesElementRef: ElementRef;
 
   private canvasElement: HTMLCanvasElement;
+  private linesElement: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
   private lastAST: AbstractSyntaxTree;
 
@@ -135,20 +137,92 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
   ngAfterViewInit() {
     console.log('[CodeViewer] Children initialised');
     this.canvasElement = <HTMLCanvasElement>this.canvasElementRef.nativeElement;
+    this.linesElement = <HTMLCanvasElement>this.linesElementRef.nativeElement;
     this.context = this.canvasElement.getContext('2d');
+    this.setCanvasSize();
   }
 
   ngOnChanges(_: SimpleChanges): void {
     if (this.lastAST && (this.lastAST.name == this.ast.name)) {
-      (this.lines || []).forEach(l => l.isSelected = l.id == this.currentNodeID);
+      this.displayCurrentNodeAndLink();
       this.lastAST = this.ast;
       return;
     }
 
     this.lines = [];
     this.ast.nodes.forEach(node => this.loadNode(node, 0));
+    if (this.context && this.linesElement) {
+      setTimeout(this.setCanvasSize, 1);
+    }
     this.lastAST = this.ast;
-    this.lines.forEach(l => l.isSelected = l.id == this.currentNodeID);
+    this.displayCurrentNodeAndLink();
+  }
+
+  private setCanvasSize() {
+    const rect = this.linesElement.getBoundingClientRect();
+    this.canvasElement.width = rect.width;
+    this.canvasElement.height = rect.height;
+  }
+
+  private displayCurrentNodeAndLink(delayed?: boolean): void {
+    if (this.context) {
+      this.context.clearRect(0, 0, this.canvasElement.width, this.canvasElement.height);
+    }
+    (this.lines || []).forEach(l => l.isSelected = l.id == this.currentNodeID);
+    if (!this.previousNodeID || !this.currentNodeID) return;
+
+    const el = document.getElementById(this.currentNodeID),
+      prevEl = document.getElementById(this.previousNodeID);
+    if (!el || !prevEl) {
+      if (!delayed) setTimeout(() => this.displayCurrentNodeAndLink(true), 1);
+      return;
+    }
+
+    const elRect = el.getBoundingClientRect(),
+      prevElRect = prevEl.getBoundingClientRect(),
+      parent = el.parentElement,
+      parentRect = parent.getBoundingClientRect(),
+      elTop = elRect.top - parentRect.top,
+      prevElTop = prevElRect.top - parentRect.top,
+      elWidth = this.getLineWidth(el),
+      prevWidth = this.getLineWidth(prevEl),
+      width = elWidth - prevWidth,
+      height = elTop - prevElTop,
+      offset = elRect.height / 2;
+
+    // Draw the arrow line
+    this.context.strokeStyle = '#003D79';
+    this.context.lineWidth = 3;
+    this.context.lineCap = 'round';
+    this.context.beginPath();
+    const startX = elWidth + offset,
+      startY = elTop + offset,
+      endX = startX - width,
+      endY = startY - height;
+    this.context.moveTo(endX, endY);
+    this.context.bezierCurveTo(endX + elRect.height, endY, startX + elRect.height, startY, startX, startY);
+    this.context.stroke();
+
+    // Draw the arrow head
+    this.context.lineWidth = 1;
+    this.context.beginPath();
+    this.context.moveTo(startX - 10, startY);
+    this.context.lineTo(startX, startY + 5);
+    this.context.lineTo(startX, startY - 5);
+    this.context.fill();
+  }
+
+  private getLineWidth(el: HTMLElement): number {
+    let width = 0,
+      left = el.getBoundingClientRect().left,
+      child = el.firstElementChild;
+    while (child) {
+      let rect = child.getBoundingClientRect(),
+        right = rect.right - left;
+      if (right > width) width = right;
+      child = child.nextElementSibling;
+    }
+    return width;
   }
 
   private loadNode(node: ASTNode, level: number): void {

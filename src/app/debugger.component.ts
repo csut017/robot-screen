@@ -4,6 +4,12 @@ import { DebugLine } from './debug-line';
 import { AbstractSyntaxTree, ASTNode } from './abstract-syntax-tree';
 import { CallTable } from './call-table';
 
+class NodeInfo {
+  constructor(public ast: AbstractSyntaxTree) { }
+
+  previousNode: string;
+}
+
 @Component({
   selector: 'app-debugger',
   templateUrl: './debugger.component.html',
@@ -18,7 +24,9 @@ export class DebuggerComponent implements OnInit {
   ast: AbstractSyntaxTree;
   callTable: CallTable = new CallTable();
   currentNodeID: string;
-  private scriptMap: { [index: string]: AbstractSyntaxTree } = {};
+  previousNodeID: string;
+  private scriptMap: { [index: string]: NodeInfo } = {};
+  private scriptLastCalls: { [index: string]: string } = {};
 
   ngOnInit() {
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
@@ -48,10 +56,17 @@ export class DebuggerComponent implements OnInit {
     }
 
     if (!ast && this.currentNodeID) {
-      ast = this.scriptMap[this.currentNodeID];
+      const info = this.scriptMap[this.currentNodeID];
+      ast = info.ast;
       if (ast) {
         console.groupCollapsed('[Debugger] Opening script for line');
         console.log(ast);
+        this.previousNodeID = info.previousNode;
+        if (info.previousNode) {
+          console.log(`Previous node is ${info.previousNode}`);
+        } else {
+          console.log(`No previous node`);
+        }
         this.ast = ast;
         console.groupEnd();
 
@@ -79,16 +94,24 @@ export class DebuggerComponent implements OnInit {
   private addDebug(msg: DebugMessage): void {
     this.callTable.increment(msg.details.node_id);
     this.logData.splice(0, 0, DebugLine.FromMessage(msg));
+
     if (msg.details.ast) {
       const ast = new AbstractSyntaxTree(msg.details.name, msg.details.ast);
       ast.nodes.forEach(child => {
         this.mapNode(ast, child);
       });
+      this.scriptLastCalls[msg.details.name] = null;
+    } else if (msg.type == 'FUN_CALL' && msg.details.node_id) {
+      const node_id = msg.details.node_id;
+      const info = this.scriptMap[node_id];
+      const scriptName = info.ast.name;
+      info.previousNode = this.scriptLastCalls[scriptName];
+      this.scriptLastCalls[scriptName] = node_id;
     }
   }
 
   private mapNode(ast: AbstractSyntaxTree, node: ASTNode) {
-    this.scriptMap[node.id] = ast;
+    this.scriptMap[node.id] = new NodeInfo(ast);
     (node.children || []).forEach(n => this.mapNode(ast, n));
     (node.args || []).forEach(n => this.mapNode(ast, n));
   }
