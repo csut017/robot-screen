@@ -173,6 +173,10 @@ export class CodeViewerComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private setCanvasSize() {
+    if (!this.linesElement) {
+      return;
+    }
+    
     const rect = this.linesElement.getBoundingClientRect();
     if (this.canvasElement.width != rect.width) this.canvasElement.width = rect.width;
     if (this.canvasElement.height != rect.height) this.canvasElement.height = rect.height;
