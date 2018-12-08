@@ -6,6 +6,7 @@ export class DebugLine {
 
     details: any;
     isOpen: boolean;
+    isSelected: boolean;
 
     static FromMessage(msg: DebugMessage): DebugLine {
         let name = 'error-standard',

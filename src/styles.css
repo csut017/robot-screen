@@ -99,3 +99,8 @@ view-display-content .btn-lg {
 .code-string, .code-number {
   color: rgb(192, 0, 0);
 }
+
+.selected-line {
+  background-color: #C5E5EF;
+  border-radius: 3px;
+}

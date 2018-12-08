@@ -27,6 +27,7 @@ export class DebuggerComponent implements OnInit {
   previousNodeID: string;
   private scriptMap: { [index: string]: NodeInfo } = {};
   private scriptLastCalls: { [index: string]: string } = {};
+  private lastItem: DebugLine;
 
   ngOnInit() {
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
@@ -45,6 +46,9 @@ export class DebuggerComponent implements OnInit {
 
   processItem(item: DebugLine): void {
     item.isOpen = !item.isOpen;
+    item.isSelected = true;
+    if (this.lastItem) this.lastItem.isSelected = false;
+    this.lastItem = item;
     this.currentNodeID = item.details.node_id;
     let ast = item.details.ast;
     if (ast) {
