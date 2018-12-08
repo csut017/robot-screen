@@ -5,55 +5,65 @@
       <div class="clr-row">
         <div class="clr-col">
           <div class="card">
-            <div class="card-header">
-              Debug Log
-            </div>
-            <div class="card-block">
-              <div *ngFor="let item of logData" class="debug-line expandable" (click)="processItem(item)" [class.selected-line]="item.isSelected">
-                <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
-                {{item.value}}
-                <clr-icon shape="info-circle" class="is-highlight" *ngIf="item.details.result || item.details.condition"></clr-icon>
-                <clr-icon shape="pop-out" class="is-highlight" *ngIf="item.details.ast"></clr-icon>
-                <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.result">
-                  <tbody>
-                    <tr>
-                      <th>Resource</th>
-                      <td>{{item.details.resource}}</td>
-                    </tr>
-                    <tr>
-                      <th>Result</th>
-                      <td>{{item.details.result}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.condition">
-                  <tbody>
-                    <tr>
-                      <th>Condition</th>
-                      <td>{{item.details.condition}}</td>
-                    </tr>
-                    <tr>
-                      <th>Value</th>
-                      <td>{{item.details.value}}</td>
-                    </tr>
-                    <tr>
-                      <th>Outcome</th>
-                      <td>{{item.details.hit ? 'Matched' : 'Skip'}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <clr-tabs>
+              <clr-tab>
+                <button clrTabLink>Full Log</button>
+                <clr-tab-content *clrIfActive>
+                  <div class="debugger-container">
+                    <div *ngFor="let item of logData" class="debug-line expandable" (click)="processItem(item)"
+                      [class.selected-line]="item.isSelected">
+                      <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
+                      {{item.value}}
+                      <clr-icon shape="info-circle" class="is-highlight" *ngIf="item.details.result || item.details.condition"></clr-icon>
+                      <clr-icon shape="pop-out" class="is-highlight" *ngIf="item.details.ast"></clr-icon>
+                      <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.result">
+                        <tbody>
+                          <tr>
+                            <th>Resource</th>
+                            <td>{{item.details.resource}}</td>
+                          </tr>
+                          <tr>
+                            <th>Result</th>
+                            <td>{{item.details.result}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <table class="table table-vertical table-compact" *ngIf="item.isOpen && item.details.condition">
+                        <tbody>
+                          <tr>
+                            <th>Condition</th>
+                            <td>{{item.details.condition}}</td>
+                          </tr>
+                          <tr>
+                            <th>Value</th>
+                            <td>{{item.details.value}}</td>
+                          </tr>
+                          <tr>
+                            <th>Outcome</th>
+                            <td>{{item.details.hit ? 'Matched' : 'Skip'}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </clr-tab-content>
+              </clr-tab>
+            </clr-tabs>
           </div>
         </div>
         <div class="clr-col">
           <div class="card" *ngIf="!!ast">
-            <div class="card-header">
-              {{ast.name}}
-            </div>
-            <div class="card-block">
-              <app-code-viewer [ast]="ast" [callTable]="callTable" [currentNodeID]="currentNodeID" [previousNodeID]="previousNodeID"></app-code-viewer>
-            </div>
+            <clr-tabs>
+              <clr-tab>
+                <button clrTabLink>{{ast.name}}</button>
+                <clr-tab-content *clrIfActive>
+                  <div class="debugger-container">
+                    <app-code-viewer [ast]="ast" [callTable]="callTable" [currentNodeID]="currentNodeID"
+                      [previousNodeID]="previousNodeID"></app-code-viewer>
+                  </div>
+                </clr-tab-content>
+              </clr-tab>
+            </clr-tabs>
           </div>
         </div>
       </div>

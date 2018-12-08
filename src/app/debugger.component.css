@@ -1,11 +1,17 @@
-.card, .table {
-    margin-top: 0;
+.card,
+.table {
+  margin-top: 0;
 }
 
 .table th {
-    width: 33%;
+  width: 33%;
 }
 
 .expandable {
-    cursor: pointer;
+  cursor: pointer;
+}
+
+.debugger-container {
+  height: calc(100vh - 115px);
+  overflow-y: scroll;
 }
