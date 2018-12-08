@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { WebsocketStatus, WebsocketService, DebugMessage } from './websocket.service';
 import { DebugLine } from './debug-line';
 import { AbstractSyntaxTree, ASTNode } from './abstract-syntax-tree';
@@ -44,11 +44,35 @@ export class DebuggerComponent implements OnInit {
       });
   }
 
-  processItem(item: DebugLine): void {
-    item.isOpen = !item.isOpen;
+  @HostListener('document:keyup', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    switch (event.code) {
+      case 'ArrowUp':
+        this.selectItem(-1);
+        break;
+      case 'ArrowDown':
+        this.selectItem(1);
+        break;
+    }
+  }
+
+  private selectItem(dir: number): void {
+    const index = this.lastItem ? (this.logData.indexOf(this.lastItem) + dir) : 0;
+    if ((index >= 0) && (index < this.logData.length)) {
+      const item = this.logData[index];
+      this.processItem(item);
+    }
+  }
+
+  private setItemSelected(item: DebugLine): void {
     item.isSelected = true;
     if (this.lastItem) this.lastItem.isSelected = false;
     this.lastItem = item;
+  }
+
+  processItem(item: DebugLine): void {
+    item.isOpen = !item.isOpen;
+    this.setItemSelected(item);
     this.currentNodeID = item.details.node_id;
     let ast = item.details.ast;
     if (ast) {
