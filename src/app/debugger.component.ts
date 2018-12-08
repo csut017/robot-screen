@@ -36,7 +36,9 @@ export class DebuggerComponent implements OnInit {
       'function': true,
       'scriptStart': true,
       'resource': true,
-      'evaluation': true
+      'evaluation': true,
+      'timeout': true,
+      'unknown': true
     };
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
     this.connectToServer();

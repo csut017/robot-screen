@@ -39,6 +39,12 @@ export class DebugLine {
                 value = `SCRIPT: ${msg.details.name}`;
                 break;
 
+            case 'TIMEOUT':
+                category = 'timeout';
+                name = 'clock';
+                value = `TIMEOUT: ${msg.details.timeout}s`;
+                break;
+
             case 'BRANCH_EVAL':
                 category = 'evaluation';
                 if (msg.details.hit) {
