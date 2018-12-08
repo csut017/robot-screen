@@ -1,7 +1,8 @@
 import { DebugMessage } from "./websocket.service";
 
 export class DebugLine {
-    constructor(public lineType: string,
+    constructor(public category: string,
+        public lineType: string,
         public value: string) { }
 
     details: any;
@@ -10,9 +11,11 @@ export class DebugLine {
 
     static FromMessage(msg: DebugMessage): DebugLine {
         let name = 'error-standard',
-            value = msg.type;
+            value = msg.type,
+            category = 'unknown';
         switch (msg.type) {
             case 'FUN_CALL':
+                category = 'function';
                 name = 'redo';
                 value = msg.details['function'];
                 let args = [],
@@ -25,16 +28,19 @@ export class DebugLine {
                 break;
 
             case 'RES_LOOKUP':
+                category = 'resource';
                 name = 'deploy';
                 value = `RESOURCE[${msg.details.type}]: ${msg.details.resource}`;
                 break;
 
             case 'SCRIPT_START':
+                category = 'scriptStart';
                 name = 'play';
                 value = `SCRIPT: ${msg.details.name}`;
                 break;
 
             case 'BRANCH_EVAL':
+                category = 'evaluation';
                 if (msg.details.hit) {
                     name = 'success-standard';
                 } else {
@@ -53,7 +59,7 @@ export class DebugLine {
                 break;
         }
 
-        let item = new DebugLine(name, value);
+        let item = new DebugLine(category, name, value);
         item.details = msg.details;
         return item;
     }

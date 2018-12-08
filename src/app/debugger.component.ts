@@ -21,6 +21,7 @@ export class DebuggerComponent implements OnInit {
 
   info: WebsocketStatus = new WebsocketStatus('Initialising...');
   logData: DebugLine[] = [];
+  filteredLog: DebugLine[] = [];
   ast: AbstractSyntaxTree;
   callTable: CallTable = new CallTable();
   currentNodeID: string;
@@ -28,8 +29,15 @@ export class DebuggerComponent implements OnInit {
   private scriptMap: { [index: string]: NodeInfo } = {};
   private scriptLastCalls: { [index: string]: string } = {};
   private lastItem: DebugLine;
+  private filterOptions: {[index: string]: boolean};
 
   ngOnInit() {
+    this.filterOptions = {
+      'function': true,
+      'scriptStart': true,
+      'resource': true,
+      'evaluation': true
+    };
     this.websocket.debugChanged.subscribe(msg => this.addDebug(msg));
     this.connectToServer();
   }
@@ -49,17 +57,19 @@ export class DebuggerComponent implements OnInit {
     switch (event.code) {
       case 'ArrowUp':
         this.selectItem(-1);
+        event.preventDefault();
         break;
       case 'ArrowDown':
         this.selectItem(1);
+        event.preventDefault();
         break;
     }
   }
 
   private selectItem(dir: number): void {
-    const index = this.lastItem ? (this.logData.indexOf(this.lastItem) + dir) : 0;
-    if ((index >= 0) && (index < this.logData.length)) {
-      const item = this.logData[index];
+    const index = this.lastItem ? (this.filteredLog.indexOf(this.lastItem) + dir) : 0;
+    if ((index >= 0) && (index < this.filteredLog.length)) {
+      const item = this.filteredLog[index];
       this.processItem(item);
     }
   }
@@ -68,6 +78,21 @@ export class DebuggerComponent implements OnInit {
     item.isSelected = true;
     if (this.lastItem) this.lastItem.isSelected = false;
     this.lastItem = item;
+  }
+
+  changeFilter(category: string): void {
+    console.log('[Debugger] Changing filter');
+    let current = !this.filterOptions[category];
+    this.filterOptions[category] = current;
+    this.filteredLog = [];
+    this.logData.forEach(item => {
+      item.isSelected = false;
+      this.addToFilter(item);
+    });
+  }
+
+  private addToFilter(item: DebugLine) {
+    if (this.filterOptions[item.category]) this.filteredLog.push(item);
   }
 
   processItem(item: DebugLine): void {
@@ -121,7 +146,9 @@ export class DebuggerComponent implements OnInit {
 
   private addDebug(msg: DebugMessage): void {
     this.callTable.increment(msg.details.node_id);
-    this.logData.splice(0, 0, DebugLine.FromMessage(msg));
+    const item = DebugLine.FromMessage(msg);
+    this.logData.push(item);
+    this.addToFilter(item);
 
     if (msg.details.ast) {
       const ast = new AbstractSyntaxTree(msg.details.name, msg.details.ast);

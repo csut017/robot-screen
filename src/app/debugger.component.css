@@ -3,6 +3,10 @@
   margin-top: 0;
 }
 
+.card-seperator {
+  margin-top: 1rem;
+}
+
 .table th {
   width: 33%;
 }
@@ -12,6 +16,6 @@
 }
 
 .debugger-container {
-  height: calc(100vh - 115px);
+  height: calc(100vh - 220px);
   overflow-y: scroll;
 }

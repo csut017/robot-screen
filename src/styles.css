@@ -96,7 +96,8 @@ view-display-content .btn-lg {
   color: rgb(35, 110, 36);
 }
 
-.code-string, .code-number {
+.code-string,
+.code-number {
   color: rgb(192, 0, 0);
 }
 

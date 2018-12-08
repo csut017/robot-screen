@@ -7,10 +7,10 @@
           <div class="card">
             <clr-tabs>
               <clr-tab>
-                <button clrTabLink>Full Log</button>
+                <button clrTabLink>Debug Log</button>
                 <clr-tab-content *clrIfActive>
                   <div class="debugger-container">
-                    <div *ngFor="let item of logData" class="debug-line expandable" (click)="processItem(item)"
+                    <div *ngFor="let item of filteredLog" class="debug-line expandable" (click)="processItem(item)"
                       [class.selected-line]="item.isSelected">
                       <clr-icon [attr.shape]="item.lineType" class="is-success"></clr-icon>
                       {{item.value}}
@@ -49,6 +49,27 @@
                 </clr-tab-content>
               </clr-tab>
             </clr-tabs>
+          </div>
+          <div class="card card-seperator">
+            <div class="card-block">
+              <form>
+                <div class="form-group">
+                  <label>Lines to Show:</label>
+                  <clr-checkbox [clrChecked]="true" [clrInline]="true" (change)="changeFilter('function')">
+                    Function
+                  </clr-checkbox>
+                  <clr-checkbox [clrChecked]="true" [clrInline]="true" (change)="changeFilter('scriptStart')">
+                    Script Start
+                  </clr-checkbox>
+                  <clr-checkbox [clrChecked]="true" [clrInline]="true" (change)="changeFilter('resource')">
+                    Resource
+                  </clr-checkbox>
+                  <clr-checkbox [clrChecked]="true" [clrInline]="true" (change)="changeFilter('evaluation')">
+                    Evaluation
+                  </clr-checkbox>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
         <div class="clr-col">
