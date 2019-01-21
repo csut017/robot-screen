@@ -148,6 +148,12 @@ export class WebsocketService {
     });
   }
 
+  setAsDebugger(): Observable<CommandStatus> {
+    console.log(`[WebSocket] Registering as debugger`);
+    return this.sendToServer('setDebug', {
+    });
+  }
+
   startScript(eventId: number): Observable<CommandStatus> {
     console.log(`[WebSocket] Triggering script with ID=${eventId}`);
     return this.sendToServer('startEvent', {

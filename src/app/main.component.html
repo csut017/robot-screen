@@ -3,7 +3,7 @@
   <div class="content-container">
     <div class="content-area">
       <div class="card">
-        <div class="card-block">
+        <div class="card-block"  *ngIf="!(info.connected || connecting)">
           <div class="alert alert-app-level alert-danger failure-information" role="alert" *ngIf="!connecting && !info.connected">
             <div class="alert-items">
               <div class="alert-item static">

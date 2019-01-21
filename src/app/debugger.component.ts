@@ -49,6 +49,7 @@ export class DebuggerComponent implements OnInit {
       .subscribe(info => {
         this.info = info;
         if (info.connected) {
+          this.setAsDebugger();
           this.refreshDebugLog();
         }
       });
@@ -135,6 +136,11 @@ export class DebuggerComponent implements OnInit {
         }
       }
     }
+  }
+
+  setAsDebugger(): void {
+    this.websocket.setAsDebugger()
+    .subscribe(_ => console.log('Set as debugger'));
   }
 
   refreshDebugLog(): void {
